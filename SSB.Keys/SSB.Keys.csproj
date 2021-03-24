@@ -4,7 +4,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>SSB.Keys</RootNamespace>
 		<Product>SSB.Keys</Product>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>Cinorid (AhmadReza Saghari)</Authors>
 		<Company>Cinorid</Company>
 		<Description>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Description>
@@ -19,7 +19,6 @@
 		<PackageTags>SSB.Keys</PackageTags>
 		<PackageIcon>packageIcon.png</PackageIcon>
 		<PackageIconFullPath>$(MSBuildThisFileDirectory)packageIcon.png</PackageIconFullPath>
-		<RootNamespace>Bitcoin.BIP39</RootNamespace>
 		<AssemblyName>SSB.Keys</AssemblyName>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<IncludeSymbols>true</IncludeSymbols>
