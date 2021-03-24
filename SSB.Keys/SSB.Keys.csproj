@@ -10,7 +10,7 @@
 		<Description>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Description>
 		<Summary>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Summary>
 		<Copyright>Copyright © 2021 Cinorid (AhmadReza Saghari)</Copyright>
-		<PackageProjectUrl>https://github.com/Cinorid/BIP39.NET</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/Cinorid/SSB-Keys-dotnet</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
