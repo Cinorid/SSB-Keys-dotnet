@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>SSB.Keys</RootNamespace>
+		<Product>SSB.Keys</Product>
+		<Version>1.0.0</Version>
+		<Authors>Cinorid (AhmadReza Saghari)</Authors>
+		<Company>Cinorid</Company>
+		<Description>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Description>
+		<Summary>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Summary>
+		<Copyright>Copyright © 2021 Cinorid (AhmadReza Saghari)</Copyright>
+		<PackageProjectUrl>https://github.com/Cinorid/BIP39.NET</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Title>SSB.Keys</Title>
+		<PackageId>SSB.Keys</PackageId>
+		<PackageTags>SSB.Keys</PackageTags>
+		<PackageIcon>packageIcon.png</PackageIcon>
+		<PackageIconFullPath>$(MSBuildThisFileDirectory)packageIcon.png</PackageIconFullPath>
+		<RootNamespace>Bitcoin.BIP39</RootNamespace>
+		<AssemblyName>SSB.Keys</AssemblyName>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="README.md" />
+		<None Include="..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
+		<None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+</Project>
