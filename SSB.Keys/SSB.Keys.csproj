@@ -7,8 +7,8 @@
 		<Version>1.0.1</Version>
 		<Authors>Cinorid (AhmadReza Saghari)</Authors>
 		<Company>Cinorid</Company>
-		<Description>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Description>
-		<Summary>C# (.NET Standard) implementation of the https://github.com/ssb-js/ssb-keys</Summary>
+		<Description>C# (.NET Standard) implementation of the NodeJS ssb-keys https://github.com/ssb-js/ssb-keys</Description>
+		<Summary>C# (.NET Standard) implementation of the NodeJS ssb-keys https://github.com/ssb-js/ssb-keys</Summary>
 		<Copyright>Copyright © 2021 Cinorid (AhmadReza Saghari)</Copyright>
 		<PackageProjectUrl>https://github.com/Cinorid/SSB-Keys-dotnet</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -30,7 +30,9 @@
 		<None Include="..\README.md" Pack="true" PackagePath="README.md" />
 		<None Include="..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
 		<None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\" />
+		<PackageReference Include="LocalStorage" Version="2.1.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Rebex.Elliptic.Ed25519" Version="1.2.1" />
 	</ItemGroup>
 
 </Project>
