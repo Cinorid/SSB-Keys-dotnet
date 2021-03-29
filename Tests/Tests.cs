@@ -45,6 +45,15 @@ namespace SSB.Keys.Tests
 		}
 
 		[Test]
+		public async System.Threading.Tasks.Task TestCreateAndLoadFileAsync()
+		{
+			var k1 = await Storage.CreateFileAsync(path + "-2.txt");
+			var k2 = await Storage.LoadFileAsync(path + "-2.txt");
+
+			Assert.AreEqual(k1, k2);
+		}
+
+		[Test]
 		public void TestSignAndVerifyString1()
 		{
 			var str = "secure scuttlebutt";
@@ -85,6 +94,17 @@ namespace SSB.Keys.Tests
 			var keys = Keys.Generate();
 			var sig = keys.SignMessage(arr);
 			var ok = keys.VerifyMessage(sig, arr);
+			Assert.AreEqual(ok, true);
+		}
+
+		[Test]
+		public void TestSignAndVerifyObject()
+		{
+			var arr = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+
+			var keys = Keys.Generate();
+			var sig = keys.SignObject(arr);
+			var ok = keys.VerifyObject(sig, arr);
 			Assert.AreEqual(ok, true);
 		}
 	}
