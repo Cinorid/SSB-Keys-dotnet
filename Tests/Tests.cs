@@ -107,5 +107,14 @@ namespace SSB.Keys.Tests
 			var ok = keys.VerifyObject(sig, arr);
 			Assert.AreEqual(ok, true);
 		}
+
+		[Test]
+		public void TestKeysClone()
+		{
+			var k1 = keys;
+			var k2 = keys.Clone();
+
+			Assert.AreEqual(k1, k2);
+		}
 	}
 }

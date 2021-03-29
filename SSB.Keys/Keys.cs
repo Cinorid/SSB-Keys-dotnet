@@ -9,6 +9,7 @@ namespace SSB.Keys
 	/// <summary>
 	/// keyfile operations for SSB
 	/// </summary>
+	[Serializable]
 	public class Keys
 	{
 		/// <summary>
