@@ -11,6 +11,9 @@ namespace SSB.Keys
 	/// </summary>
 	public class Storage
 	{
+		/// <summary>
+		/// Default file name of secret file
+		/// </summary>
 		public static string SecretFileName { get; set; } = "secret";
 
 		/// <summary>
