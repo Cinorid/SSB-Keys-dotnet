@@ -33,6 +33,7 @@
 		<PackageReference Include="LocalStorage" Version="2.1.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Rebex.Elliptic.Ed25519" Version="1.2.1" />
+		<PackageReference Include="Sodium.Core" Version="1.2.3" />
 	</ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Rebex.Security.Cryptography;
@@ -157,9 +158,9 @@ namespace SSB.Keys
 		{
 			if (seed == null)
 			{
-				Random rnd = new Random();
+				RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 				seed = new byte[32];
-				rnd.NextBytes(seed);
+				rng.GetBytes(seed);
 			}
 
 			Ed25519 ed25519 = new Ed25519();
@@ -187,8 +188,11 @@ namespace SSB.Keys
 		/// <param name="privateKey"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignMessage(byte[] privateKey, byte[] message)
 		{
+			if (privateKey == null || privateKey.Length != 64) throw new InvalidOperationException("Invalid private key format");
+
 			Ed25519 ed25519 = new Ed25519();
 			ed25519.FromPrivateKey(privateKey);
 			return Convert.ToBase64String(ed25519.SignMessage(message)) + ".sig" + ".ed25519";
@@ -200,6 +204,7 @@ namespace SSB.Keys
 		/// <param name="privateKey"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignMessage(string privateKey, string message)
 		{
 			var _privateKey = Convert.FromBase64String(privateKey.Replace(".ed25519", ""));
@@ -214,6 +219,7 @@ namespace SSB.Keys
 		/// <param name="keys"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignMessage(Keys keys, string message)
 		{
 			return SignMessage(keys.Private, message);
@@ -222,9 +228,24 @@ namespace SSB.Keys
 		/// <summary>
 		/// sign message using a key
 		/// </summary>
+		/// <param name="privateKeys"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
+		public static string SignMessage(string privateKeys, byte[] message)
+		{
+			var _privateKey = Convert.FromBase64String(privateKeys.Replace(".ed25519", ""));
+
+			return SignMessage(_privateKey, message);
+		}
+
+		/// <summary>
+		/// sign message using a key
+		/// </summary>
 		/// <param name="keys"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignMessage(Keys keys, byte[] message)
 		{
 			var _privateKey = Convert.FromBase64String(keys.Private.Replace(".ed25519", ""));
@@ -237,6 +258,7 @@ namespace SSB.Keys
 		/// </summary>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public string SignMessage(string message)
 		{
 			return SignMessage(this, message);
@@ -247,6 +269,7 @@ namespace SSB.Keys
 		/// </summary>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public string SignMessage(byte[] message)
 		{
 			return SignMessage(this, message);
@@ -258,6 +281,7 @@ namespace SSB.Keys
 		/// <param name="privateKey"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignObject(byte[] privateKey, object obj)
 		{
 			var _obj = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
@@ -271,6 +295,7 @@ namespace SSB.Keys
 		/// <param name="privateKey"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignObject(string privateKey, object obj)
 		{
 			var _privateKey = Convert.FromBase64String(privateKey.Replace(".ed25519", ""));
@@ -284,6 +309,7 @@ namespace SSB.Keys
 		/// <param name="keys"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public static string SignObject(Keys keys, object obj)
 		{
 			return SignObject(keys.Private, obj);
@@ -294,6 +320,7 @@ namespace SSB.Keys
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
 		public string SignObject(object obj)
 		{
 			return SignObject(this, obj);
@@ -306,8 +333,13 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyMessage(byte[] publicKey, byte[] sign, byte[] message)
 		{
+			if (publicKey == null || publicKey.Length != 32) throw new InvalidOperationException("Invalid public key format");
+			if (sign == null || sign.Length != 64) throw new InvalidOperationException("Invalid signature format");
+
 			Ed25519 ed25519 = new Ed25519();
 			ed25519.FromPublicKey(publicKey);
 			return ed25519.VerifyMessage(message, sign);
@@ -320,6 +352,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyMessage(string publicKey, string sign, string message)
 		{
 			var _publicKey = Convert.FromBase64String(publicKey.Replace(".ed25519", ""));
@@ -336,6 +370,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyMessage(Keys keys, string sign, string message)
 		{
 			return VerifyMessage(keys.Public, sign, message);
@@ -348,6 +384,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyMessage(Keys keys, byte[] sign, byte[] message)
 		{
 			var _publicKey = Convert.FromBase64String(keys.Public.Replace(".ed25519", ""));
@@ -358,9 +396,45 @@ namespace SSB.Keys
 		/// <summary>
 		/// verify signed message using a key
 		/// </summary>
+		/// <param name="keys"></param>
 		/// <param name="sign"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
+		public static bool VerifyMessage(Keys keys, string sign, byte[] message)
+		{
+			var _publicKey = Convert.FromBase64String(keys.Public.Replace(".ed25519", ""));
+			var _sign = Convert.FromBase64String(sign.Replace(".ed25519", "").Replace(".sig", ""));
+
+			return VerifyMessage(_publicKey, _sign, message);
+		}
+
+		/// <summary>
+		/// verify signed message using a key
+		/// </summary>
+		/// <param name="publicKeys"></param>
+		/// <param name="sign"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
+		public static bool VerifyMessage(string publicKeys, string sign, byte[] message)
+		{
+			var _publicKey = Convert.FromBase64String(publicKeys.Replace(".ed25519", ""));
+			var _sign = Convert.FromBase64String(sign.Replace(".ed25519", "").Replace(".sig", ""));
+
+			return VerifyMessage(_publicKey, _sign, message);
+		}
+
+		/// <summary>
+		/// verify signed message using a key
+		/// </summary>
+		/// <param name="sign"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public bool VerifyMessage(string sign, string message)
 		{
 			return Keys.VerifyMessage(this.Public, sign, message);
@@ -372,6 +446,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public bool VerifyMessage(string sign, byte[] message)
 		{
 			var _sign = Convert.FromBase64String(sign.Replace(".ed25519", "").Replace(".sig", ""));
@@ -386,6 +462,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyObject(byte[] publicKey, byte[] sign, object obj)
 		{
 			var _obj = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
@@ -399,6 +477,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyObject(string publicKey, string sign, object obj)
 		{
 			var _publicKey = Convert.FromBase64String(publicKey.Replace(".ed25519", ""));
@@ -414,6 +494,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public static bool VerifyObject(Keys keys, string sign, object obj)
 		{
 			return VerifyObject(keys.Public, sign, obj);
@@ -425,6 +507,8 @@ namespace SSB.Keys
 		/// <param name="sign"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
+		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
 		public bool VerifyObject(string sign, object obj)
 		{
 			return Keys.VerifyObject(this.Public, sign, obj);
@@ -456,6 +540,92 @@ namespace SSB.Keys
 				stream.Seek(0, System.IO.SeekOrigin.Begin);
 				return (Keys)formatter.Deserialize(stream);
 			}
+		}
+
+		public static byte[] SecretKeyToPrivateBoxSecret(string privateKeys)
+		{
+			return Sodium.PublicKeyAuth.ConvertEd25519SecretKeyToCurve25519SecretKey(Utilities.ToByteArray(privateKeys));
+		}
+
+		public static byte[] SecretKeyToPrivateBoxSecret(Keys keys)
+		{
+			return SecretKeyToPrivateBoxSecret(keys.Private);
+		}
+
+		public static byte[] UnboxKey(string boxed, Keys keys)
+		{
+			var _boxed = Utilities.ToByteArray(boxed);
+			return UnboxKey(_boxed, keys);
+		}
+
+		public static byte[] UnboxKey(byte[] boxed, Keys keys)
+		{
+			var sk = SecretKeyToPrivateBoxSecret(keys);
+			return Sodium.SecretBox.Open(boxed, null, (Utilities.ToByteArray(keys.Private)));
+		}
+
+		public static byte[] SecretBox(byte[] data, byte[] privateKeys)
+		{
+			if (data == null || data.Length == 0) return null;
+
+			var ptxt = Utilities.ToByteArray(JsonConvert.SerializeObject(data));
+
+			return Sodium.SecretBox.Create(ptxt, Utilities.SubArray(privateKeys, 0, 24), privateKeys);
+		}
+
+		public static byte[] SecretBox(byte[] data, string privateKeys)
+		{
+			var _private = Utilities.ToByteArray(privateKeys);
+			return SecretBox(data, _private);
+		}
+
+		public static byte[] SecretBox(string data, string privateKeys)
+		{
+			var _data = Utilities.ToByteArray(data);
+			return SecretBox(_data, privateKeys);
+		}
+
+		public static byte[] SecretBox(byte[] data, Keys keys)
+		{
+			return SecretBox(data, keys.Private);
+		}
+
+		public static byte[] SecretBox(string data, Keys keys)
+		{
+			return SecretBox(data, keys.Private);
+		}
+
+		public static object SecretUnBox(byte[] cipherText, byte[] privateKeys)
+		{
+			if (cipherText == null || cipherText.Length == 0) return null;
+
+			var ptxt = Sodium.SecretBox.Open(cipherText, Utilities.SubArray(privateKeys, 0, 24), privateKeys);
+			if (ptxt == null || ptxt.Length == 0) return null;
+
+			return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(ptxt));
+		}
+
+		public static object SecretUnBox(byte[] cipherText, string privateKeys)
+		{
+			var _private = Utilities.ToByteArray(privateKeys);
+			return SecretUnBox(cipherText, _private);
+		}
+
+		public static object SecretUnBox(string cipherText, string privateKeys)
+		{
+			var _cipherText = Encoding.UTF8.GetBytes(cipherText);
+			return SecretUnBox(_cipherText, privateKeys);
+		}
+
+		public static object SecretUnBox(byte[] cipherText, Keys keys)
+		{
+			return SecretUnBox(cipherText, keys.Private);
+		}
+
+		public static object SecretUnBox(string cipherText, Keys keys)
+		{
+			var _cipherText = Encoding.UTF8.GetBytes(cipherText);
+			return SecretUnBox(_cipherText, keys.Private);
 		}
 
 		/// <summary>
