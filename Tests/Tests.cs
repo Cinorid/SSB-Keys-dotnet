@@ -150,7 +150,7 @@ namespace SSB.Keys.Tests
 			rng.GetBytes(seed);
 			var k2 = Keys.Generate(seed);
 
-			Assert.AreNotEqual(k1 == k2, false);
+			Assert.IsTrue(k1 != k2);
 		}
 
 		[Test]
