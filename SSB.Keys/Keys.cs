@@ -112,6 +112,43 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
+		/// Clone a Keys object
+		/// </summary>
+		/// <returns></returns>
+		public Keys Clone()
+		{
+			return Keys.Clone(this);
+		}
+
+		/// <summary>
+		/// Clone a Keys object
+		/// </summary>
+		/// <param name="keys"></param>
+		/// <returns></returns>
+		public static Keys Clone(Keys keys)
+		{
+			if (!typeof(Keys).IsSerializable)
+			{
+				throw new ArgumentException("The type must be serializable.", "source");
+			}
+
+			// Don't serialize a null object, simply return the default for that object
+			if (Object.ReferenceEquals(keys, null))
+			{
+				return default(Keys);
+			}
+
+			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			System.IO.Stream stream = new System.IO.MemoryStream();
+			using (stream)
+			{
+				formatter.Serialize(stream, keys);
+				stream.Seek(0, System.IO.SeekOrigin.Begin);
+				return (Keys)formatter.Deserialize(stream);
+			}
+		}
+
+		/// <summary>
 		/// Converts SSB keys to a indented Json string
 		/// </summary>
 		/// <param name="keys">SSB keys object</param>
@@ -159,9 +196,7 @@ namespace SSB.Keys
 		{
 			if (seed == null)
 			{
-				RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-				seed = new byte[32];
-				rng.GetBytes(seed);
+				seed = PrivateBox.RandomBytes(32);
 			}
 
 			Ed25519 ed25519 = new Ed25519();
@@ -255,28 +290,6 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
-		/// sign message using a key
-		/// </summary>
-		/// <param name="message"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
-		public string SignMessage(string message)
-		{
-			return SignMessage(this, message);
-		}
-
-		/// <summary>
-		/// sign message using a key
-		/// </summary>
-		/// <param name="message"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
-		public string SignMessage(byte[] message)
-		{
-			return SignMessage(this, message);
-		}
-
-		/// <summary>
 		/// sign object using a key
 		/// </summary>
 		/// <param name="privateKey"></param>
@@ -314,17 +327,6 @@ namespace SSB.Keys
 		public static string SignObject(Keys keys, object obj)
 		{
 			return SignObject(keys.Private, obj);
-		}
-
-		/// <summary>
-		/// sign object using a key
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidOperationException">Invalid private key format</exception>
-		public string SignObject(object obj)
-		{
-			return SignObject(this, obj);
 		}
 
 		/// <summary>
@@ -429,34 +431,6 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
-		/// verify signed message using a key
-		/// </summary>
-		/// <param name="sign"></param>
-		/// <param name="message"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
-		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
-		public bool VerifyMessage(string sign, string message)
-		{
-			return Keys.VerifyMessage(this.Public, sign, message);
-		}
-
-		/// <summary>
-		/// verify signed message using a key
-		/// </summary>
-		/// <param name="sign"></param>
-		/// <param name="message"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
-		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
-		public bool VerifyMessage(string sign, byte[] message)
-		{
-			var _sign = Convert.FromBase64String(sign.Replace(".ed25519", "").Replace(".sig", ""));
-
-			return Keys.VerifyMessage(this, _sign, message);
-		}
-
-		/// <summary>
 		/// verify signed object using a key
 		/// </summary>
 		/// <param name="publicKey"></param>
@@ -500,56 +474,6 @@ namespace SSB.Keys
 		public static bool VerifyObject(Keys keys, string sign, object obj)
 		{
 			return VerifyObject(keys.Public, sign, obj);
-		}
-
-		/// <summary>
-		/// verify signed object using a key
-		/// </summary>
-		/// <param name="sign"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidOperationException">Invalid public key format</exception>
-		/// <exception cref="InvalidOperationException">Invalid signature format</exception>
-		public bool VerifyObject(string sign, object obj)
-		{
-			return Keys.VerifyObject(this.Public, sign, obj);
-		}
-
-		/// <summary>
-		/// Clone a Keys object
-		/// </summary>
-		/// <param name="keys"></param>
-		/// <returns></returns>
-		public static Keys Clone(Keys keys)
-		{
-			if (!typeof(Keys).IsSerializable)
-			{
-				throw new ArgumentException("The type must be serializable.", "source");
-			}
-
-			// Don't serialize a null object, simply return the default for that object
-			if (Object.ReferenceEquals(keys, null))
-			{
-				return default(Keys);
-			}
-
-			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-			System.IO.Stream stream = new System.IO.MemoryStream();
-			using (stream)
-			{
-				formatter.Serialize(stream, keys);
-				stream.Seek(0, System.IO.SeekOrigin.Begin);
-				return (Keys)formatter.Deserialize(stream);
-			}
-		}
-
-		/// <summary>
-		/// Clone a Keys object
-		/// </summary>
-		/// <returns></returns>
-		public Keys Clone()
-		{
-			return Keys.Clone(this);
 		}
 
 		public static byte[] SecretKeyToPrivateBoxSecret(string privateKeys)
