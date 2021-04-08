@@ -62,7 +62,7 @@ namespace SSB.Keys
 			var i = s.IndexOf(".");
 			if (i >= 0)
 			{
-				string base64 = s.Substring(0, i + 1);
+				string base64 = s.Substring(0, i);
 				return Convert.FromBase64String(base64);
 			}
 			else
