@@ -74,12 +74,6 @@ namespace SSB.Keys.Tests
 			}
 
 			{
-				var sig = keys.SignMessage(str);
-				var ok = keys.VerifyMessage(sig, str);
-				Assert.AreEqual(ok, true);
-			}
-
-			{
 				var sig = Keys.SignMessage(keys, arr);
 				var ok = Keys.VerifyMessage(keys, sig, arr);
 				Assert.AreEqual(ok, true);
@@ -88,12 +82,6 @@ namespace SSB.Keys.Tests
 			{
 				var sig = Keys.SignMessage(keys.Private, arr);
 				var ok = Keys.VerifyMessage(keys.Public, sig, arr);
-				Assert.AreEqual(ok, true);
-			}
-
-			{
-				var sig = keys.SignMessage(arr);
-				var ok = keys.VerifyMessage(sig, arr);
 				Assert.AreEqual(ok, true);
 			}
 		}
@@ -121,12 +109,6 @@ namespace SSB.Keys.Tests
 				var ok = Keys.VerifyObject(keys, sig, obj);
 				Assert.AreEqual(ok, true);
 			}
-
-			{
-				var sig = keys.SignObject(obj);
-				var ok = keys.VerifyObject(sig, obj);
-				Assert.AreEqual(ok, true);
-			}
 		}
 
 		[Test]
@@ -141,14 +123,8 @@ namespace SSB.Keys.Tests
 		[Test]
 		public void TestSeededKeys()
 		{
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-			var seed = new byte[32];
-
-			rng.GetBytes(seed);
-			var k1 = Keys.Generate(seed);
-
-			rng.GetBytes(seed);
-			var k2 = Keys.Generate(seed);
+			var k1 = Keys.Generate(PrivateBox.RandomBytes(32));
+			var k2 = Keys.Generate(PrivateBox.RandomBytes(32));
 
 			Assert.IsTrue(k1 != k2);
 		}
