@@ -4,7 +4,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>SSB.Keys</RootNamespace>
 		<Product>SSB.Keys</Product>
-		<Version>1.0.1</Version>
+		<Version>7.2.2</Version>
 		<Authors>Cinorid (AhmadReza Saghari)</Authors>
 		<Company>Cinorid</Company>
 		<Description>C# (.NET Standard) implementation of the NodeJS ssb-keys https://github.com/ssb-js/ssb-keys</Description>

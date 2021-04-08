@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Rebex.Security.Cryptography;
+using System.Linq;
 
 namespace SSB.Keys
 {
@@ -542,6 +543,15 @@ namespace SSB.Keys
 			}
 		}
 
+		/// <summary>
+		/// Clone a Keys object
+		/// </summary>
+		/// <returns></returns>
+		public Keys Clone()
+		{
+			return Keys.Clone(this);
+		}
+
 		public static byte[] SecretKeyToPrivateBoxSecret(string privateKeys)
 		{
 			return Sodium.PublicKeyAuth.ConvertEd25519SecretKeyToCurve25519SecretKey(Utilities.ToByteArray(privateKeys));
@@ -562,6 +572,52 @@ namespace SSB.Keys
 		{
 			var sk = SecretKeyToPrivateBoxSecret(keys);
 			return Sodium.SecretBox.Open(boxed, null, (Utilities.ToByteArray(keys.Private)));
+		}
+
+		public static object UnboxBody(byte[] boxed, Keys key)
+		{
+			if (key == null) return null;
+			//var _boxed = Utilities.ToByteArray(boxed);
+			var _key = Utilities.ToByteArray(key.Private);
+			var msg = PrivateBox.MultiboxOpenBody(boxed, _key);
+			try
+			{
+				return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(msg));
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		public static object Unbox(string boxed, byte[] privateKey)
+		{
+			if (privateKey == null) return null;
+			var _boxed = Utilities.ToByteArray(boxed);
+
+			var sk = Sodium.PublicKeyAuth.ConvertEd25519SecretKeyToCurve25519SecretKey(privateKey);
+
+			try
+			{
+				var msg = PrivateBox.MultiboxOpen(_boxed, sk);
+				return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(msg));
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		public static object Unbox(string boxed, string privateKey)
+		{
+			var _key = Utilities.ToByteArray(privateKey);
+			return Unbox(boxed, _key);
+		}
+
+		public static object Unbox(string boxed, Keys keys)
+		{
+			var _key = Utilities.ToByteArray(keys.Private);
+			return Unbox(boxed, _key);
 		}
 
 		public static byte[] SecretBox(byte[] data, byte[] privateKeys)
@@ -628,13 +684,37 @@ namespace SSB.Keys
 			return SecretUnBox(_cipherText, keys.Private);
 		}
 
-		/// <summary>
-		/// Clone a Keys object
-		/// </summary>
-		/// <returns></returns>
-		public Keys Clone()
+		public static string Box(object msg, byte[][] recipientsPublicKey)
 		{
-			return Keys.Clone(this);
+			var _msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
+			var _box = new List<byte[]>();
+			foreach (var recPubKey in recipientsPublicKey)
+			{
+				_box.Add(Sodium.PublicKeyAuth.ConvertEd25519PublicKeyToCurve25519PublicKey(recPubKey));
+			}
+
+			var boxed = PrivateBox.Encrypt(_msg, _box);
+
+			return Convert.ToBase64String(boxed) + ".box";
+		}
+
+		public static string Box(object msg, List<byte[]> recipientsPublicKey)
+		{
+			return Box(msg, recipientsPublicKey.ToArray());
+		}
+
+		public static string Box(object msg, Keys[] recipients)
+		{
+			var pubKeys = recipients.Select(x => Utilities.ToByteArray(x.Public)).ToArray();
+
+			return Box(msg, pubKeys);
+		}
+
+		public static string Box(object msg, string[] recipients)
+		{
+			var pubKeys = recipients.Select(x => Utilities.ToByteArray(x)).ToArray();
+
+			return Box(msg, pubKeys);
 		}
 	}
 }

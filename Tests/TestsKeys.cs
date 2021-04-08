@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace SSB.Keys.Tests
 {
-	public class Tests
+	public class TestsKeys
 	{
 		Keys keys;
 		string path;
