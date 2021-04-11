@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Rebex.Security.Cryptography;
 using System.Linq;
+using AuditDrivenCrypto;
 
 namespace SSB.Keys
 {
@@ -514,7 +514,7 @@ namespace SSB.Keys
 			}
 		}
 
-		public static object Unbox(string boxed, byte[] privateKey)
+		public static Newtonsoft.Json.Linq.JObject Unbox(string boxed, byte[] privateKey)
 		{
 			if (privateKey == null) return null;
 			var _boxed = Utilities.ToByteArray(boxed);
@@ -524,7 +524,7 @@ namespace SSB.Keys
 			try
 			{
 				var msg = PrivateBox.MultiboxOpen(_boxed, sk);
-				return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(msg));
+				return JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(Encoding.UTF8.GetString(msg));
 			}
 			catch
 			{
@@ -532,23 +532,23 @@ namespace SSB.Keys
 			}
 		}
 
-		public static object Unbox(string boxed, string privateKey)
+		public static Newtonsoft.Json.Linq.JObject Unbox(string boxed, string privateKey)
 		{
 			var _key = Utilities.ToByteArray(privateKey);
 			return Unbox(boxed, _key);
 		}
 
-		public static object Unbox(string boxed, Keys keys)
+		public static Newtonsoft.Json.Linq.JObject Unbox(string boxed, Keys keys)
 		{
 			var _key = Utilities.ToByteArray(keys.Private);
 			return Unbox(boxed, _key);
 		}
 
-		public static byte[] SecretBox(byte[] data, byte[] privateKeys)
+		public static byte[] SecretBox(object data, byte[] privateKeys)
 		{
-			if (data == null || data.Length == 0) return null;
+			if (data == null) return null;
 
-			var ptxt = Utilities.ToByteArray(JsonConvert.SerializeObject(data));
+			var ptxt = JsonConvert.SerializeObject(data);
 
 			return Sodium.SecretBox.Create(ptxt, Utilities.SubArray(privateKeys, 0, 24), privateKeys);
 		}
@@ -575,34 +575,34 @@ namespace SSB.Keys
 			return SecretBox(data, keys.Private);
 		}
 
-		public static object SecretUnBox(byte[] cipherText, byte[] privateKeys)
+		public static Newtonsoft.Json.Linq.JObject SecretUnBox(byte[] cipherText, byte[] privateKeys)
 		{
 			if (cipherText == null || cipherText.Length == 0) return null;
 
 			var ptxt = Sodium.SecretBox.Open(cipherText, Utilities.SubArray(privateKeys, 0, 24), privateKeys);
 			if (ptxt == null || ptxt.Length == 0) return null;
 
-			return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(ptxt));
+			return JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(Encoding.UTF8.GetString(ptxt));
 		}
 
-		public static object SecretUnBox(byte[] cipherText, string privateKeys)
+		public static Newtonsoft.Json.Linq.JObject SecretUnBox(byte[] cipherText, string privateKeys)
 		{
 			var _private = Utilities.ToByteArray(privateKeys);
 			return SecretUnBox(cipherText, _private);
 		}
 
-		public static object SecretUnBox(string cipherText, string privateKeys)
+		public static Newtonsoft.Json.Linq.JObject SecretUnBox(string cipherText, string privateKeys)
 		{
 			var _cipherText = Encoding.UTF8.GetBytes(cipherText);
 			return SecretUnBox(_cipherText, privateKeys);
 		}
 
-		public static object SecretUnBox(byte[] cipherText, Keys keys)
+		public static Newtonsoft.Json.Linq.JObject SecretUnBox(byte[] cipherText, Keys keys)
 		{
 			return SecretUnBox(cipherText, keys.Private);
 		}
 
-		public static object SecretUnBox(string cipherText, Keys keys)
+		public static Newtonsoft.Json.Linq.JObject SecretUnBox(string cipherText, Keys keys)
 		{
 			var _cipherText = Encoding.UTF8.GetBytes(cipherText);
 			return SecretUnBox(_cipherText, keys.Private);

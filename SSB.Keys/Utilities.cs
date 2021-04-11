@@ -7,18 +7,16 @@ using System.Text;
 namespace SSB.Keys
 {
 
-	public class Utilities
+	public static class Utilities
 	{
-		static SHA256 sha256 = SHA256.Create();
-
-		public static byte[] Hash(byte[] data, Encoding encoding)
+		public static string Hash(byte[] data)
 		{
-			if (data.GetType() == typeof(string) && encoding == null)
-			{
-				return sha256.ComputeHash(data);
-			}
+			return Sodium.Utilities.BinaryToBase64(Sodium.CryptoHash.Sha256(data)) + ".sha256";
+		}
 
-			return new byte[0];
+		public static string Hash(string data)
+		{
+			return Sodium.Utilities.BinaryToBase64(Sodium.CryptoHash.Sha256(data)) + ".sha256";
 		}
 
 		/// <summary>
@@ -71,7 +69,7 @@ namespace SSB.Keys
 			}
 		}
 
-		public static T[] SubArray<T>(T[] data, int index, int length)
+		internal static T[] SubArray<T>(this T[] data, int index, int length)
 		{
 			T[] result = new T[length];
 			Array.Copy(data, index, result, 0, length);

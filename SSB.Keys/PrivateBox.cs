@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Sodium;
 
-namespace SSB.Keys
+namespace AuditDrivenCrypto
 {
 	/// <summary>
 	/// an unaddressed box, with a private note-to-self so the sender can remember who it was for.
@@ -118,6 +118,11 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
+		/// Takes a 'plaintext' Buffer of the message you want to encrypt,<para />
+		/// and an array of recipient public keys.<para />
+		/// Returns a message that is encrypted to all recipients<para />
+		/// and openable by them with 'PrivateBox.MultiboxOpen'.<para />
+		/// The 'recipients' must be between 1 and 7 items long.
 		/// same as Multibox
 		/// </summary>
 		/// <param name="msg"></param>
@@ -131,6 +136,11 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
+		/// Takes a 'plaintext' Buffer of the message you want to encrypt,<para />
+		/// and an array of recipient public keys.<para />
+		/// Returns a message that is encrypted to all recipients<para />
+		/// and openable by them with 'PrivateBox.MultiboxOpen'.<para />
+		/// The 'recipients' must be between 1 and 7 items long.
 		/// same as Multibox
 		/// </summary>
 		/// <param name="msg"></param>
@@ -143,6 +153,11 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
+		/// Takes a 'plaintext' Buffer of the message you want to encrypt and encode it to UTF8 bytes array,<para />
+		/// and an array of recipient public keys.<para />
+		/// Returns a message that is encrypted to all recipients<para />
+		/// and openable by them with 'PrivateBox.MultiboxOpen'.<para />
+		/// The 'recipients' must be between 1 and 7 items long.
 		/// same as Multibox
 		/// </summary>
 		/// <param name="msg"></param>
@@ -155,6 +170,11 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
+		/// Takes a 'plaintext' Buffer of the message you want to encrypt and encode it to UTF8 bytes array,<para />
+		/// and an array of recipient public keys.<para />
+		/// Returns a message that is encrypted to all recipients<para />
+		/// and openable by them with 'PrivateBox.MultiboxOpen'.<para />
+		/// The 'recipients' must be between 1 and 7 items long.
 		/// same as Multibox
 		/// </summary>
 		/// <param name="msg"></param>
@@ -167,7 +187,7 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
-		/// 
+		/// MultiboxOpenKey
 		/// </summary>
 		/// <param name="cypherText"></param>
 		/// <param name="secretKey"></param>
@@ -208,7 +228,7 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
-		/// 
+		/// MultiboxOpenBody
 		/// </summary>
 		/// <param name="cypherText"></param>
 		/// <param name="length_and_key"></param>
@@ -245,6 +265,9 @@ namespace SSB.Keys
 		}
 
 		/// <summary>
+		/// Attempt to decrypt a private-box message, using your secret key.
+		/// If you where an intended recipient then the plaintext will be returned.
+		/// If it was not for you, then 'null' will be returned.
 		/// same as MultiboxOpen
 		/// </summary>
 		/// <param name="cypherText"></param>
