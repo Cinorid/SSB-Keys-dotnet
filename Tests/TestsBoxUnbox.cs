@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using System;
 using System.Security.Cryptography;
 
@@ -12,7 +13,7 @@ namespace SSB.Keys.Tests
 		}
 
 		[Test]
-		public void TestBoxUnbox()
+		public void BoxUnbox()
 		{
 			var obj = new
 			{
@@ -29,14 +30,12 @@ namespace SSB.Keys.Tests
 			foreach (var key in prvKeys)
 			{
 				var msg = Keys.Unbox(boxed, key);
-				//Assert.AreEqual(msg, obj);
+				Assert.AreEqual(JObject.DeepEquals(msg, JObject.FromObject(obj)), true);
 			}
-
-			Assert.Pass();
 		}
 
 		[Test]
-		public void TestReturnNullForInvalidContent()
+		public void ReturnNullForInvalidContent()
 		{
 			var alice = Keys.Generate();
 
